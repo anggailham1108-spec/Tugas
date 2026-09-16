@@ -10,6 +10,9 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres', // Mengunci dialek ke PostgreSQL
     logging: false,      // Ubah ke true jika ingin melihat query SQL di terminal
+    define: {
+      schema: process.env.DB_SCHEMA
+    }
   }
 );
 
