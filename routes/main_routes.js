@@ -20,6 +20,8 @@ module.exports = (app) => {
   // Daftarkan router ke aplikasi express (app) secara langsung
   app.use(router);
   // fungsi fungsi di contorller customer
-  router.get('/customers', CustomerController.getAllCustomers);
+  //router.get('/customers', CustomerController.getAllCustomers);
+  router.get('/customers', CustomerController.searchCustomer);
   router.get('/customers/sort', CustomerController.getAllCustomersSort);
+  router.post('/customers', CustomerController.createCustomer);
 };
