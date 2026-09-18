@@ -16,12 +16,25 @@ const router = express.Router();
 
 
 module.exports = (app) => {
+  //=== router dari customer controller ====
   const CustomerController = require('../controllers/customer-controller.js');
   // Daftarkan router ke aplikasi express (app) secara langsung
   app.use(router);
   // fungsi fungsi di contorller customer
   //router.get('/customers', CustomerController.getAllCustomers);
   router.get('/customers', CustomerController.searchCustomer);
-  router.get('/customers/sort', CustomerController.getAllCustomersSort);
+  // router.get('/customers/sort', CustomerController.getAllCustomersSort);
   router.post('/customers', CustomerController.createCustomer);
+  // === end of customer controller ===
+
+  // === router dari complain controller ====
+  const ComplainController = require('../controllers/complain-controller.js');
+  //membuat complain
+  router.post('/complains', ComplainController.createComplain);
+  // update complain
+  router.put('/complains/:id', ComplainController.updateComplain);
+  // delete complain
+  router.delete('/complains/:id', ComplainController.deleteComplain);
+  // tampilkan complain
+  //router.get('/complains', require('../controllers/complain-controller').getAllComplains);  
 };

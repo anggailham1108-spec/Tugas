@@ -2,9 +2,9 @@ const db = require("../models");
 const Op = db.Sequelize.Op;
 
 // FUNGSI GLOBAL/REUSEABLE/HELP
-const fetchAll = async (model) => {
-  return await model.findAll();
-};
+// const fetchAll = async (model) => {
+//   return await model.findAll();
+// };
 
 const fetchAllWithOrder = async (model, orderConfig = []) => {
   return await model.findAll({
@@ -18,23 +18,26 @@ const findByColumn = async (model, columnName, value) => {
   });
 };
 
-const searchCustomerByNameOrPhone = async (model, keyword) => {
+const searchCustomerByNameOrPhone = async (model, keyword, orderConfig = []) => {
   return await model.findAll({
     where: {
       [Op.or]: [ 
         { nama: { [Op.iLike]: `%${keyword}%` } },
         { no_telp: { [Op.iLike]: `%${keyword}%` } }
       ]
-    }
+    },
+    order: orderConfig
   });
 };
 
 const createRecord = async (model, dataObject) => {
   return await model.create(dataObject);
 };
+
+
 // END OF FUNGSI GLOBAL
 
-// FUNGSI BARU
+// FUNGSI BARU 1
 // exports.getAllCustomers = async (req, res) => {
 //   try {
 //     // Memanggil fungsi umum dengan melemparkan model db.Customer
@@ -50,23 +53,25 @@ const createRecord = async (model, dataObject) => {
 //   }
 // };
 
-exports.getAllCustomersSort = async (req, res) => {
-  try {
-    // Memanggil fungsi umum sorting dengan model db.Customer dan konfigurasi DESC
-    let allCustomers = await fetchAllWithOrder(db.Customer, [["id", "DESC"]]);
+// FUNGSI BARU 2
 
-    return res.status(200).send({
-      success: true,
-      message: "All customers Sort by ID",
-      all_customer: allCustomers,
-    });
-  } catch (error) {
-    return res.status(500).send({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+// exports.getAllCustomersSort = async (req, res) => {
+//   try {
+//     // Memanggil fungsi umum sorting dengan model db.Customer dan konfigurasi DESC
+//     let allCustomers = await fetchAllWithOrder(db.Customer, [["id", "DESC"]]);
+
+//     return res.status(200).send({
+//       success: true,
+//       message: "All customers Sort by ID",
+//       all_customer: allCustomers,
+//     });
+//   } catch (error) {
+//     return res.status(500).send({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
 
 exports.createCustomer = async (req, res) => {
   try {
@@ -110,14 +115,15 @@ exports.createCustomer = async (req, res) => {
 
 exports.searchCustomer = async (req, res) => {
   try {
-    const { keyword } = req.query;
+    const { keyword, sortBy, sortOrder } = req.query;
+    const orderConfig = sortBy ? [[sortBy, sortOrder || 'ASC']] : [['id', 'ASC']];
     let results;
 
     if (keyword && keyword.trim() !== "") {
-      results = await searchCustomerByNameOrPhone(db.Customer, keyword);
+      results = await searchCustomerByNameOrPhone(db.Customer, keyword, orderConfig);
     }
     else {
-      results = await fetchAll(db.Customer);
+      results = await fetchAllWithOrder(db.Customer, orderConfig);
     }
     return res.status(200).json({
       success: true,
@@ -133,34 +139,6 @@ exports.searchCustomer = async (req, res) => {
     });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
