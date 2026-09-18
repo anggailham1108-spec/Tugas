@@ -36,5 +36,5 @@ module.exports = (app) => {
   // delete complain
   router.delete('/complains/:id', ComplainController.deleteComplain);
   // tampilkan complain
-  //router.get('/complains', require('../controllers/complain-controller').getAllComplains);  
+  router.get('/complains', ComplainController.searchComplains);
 };

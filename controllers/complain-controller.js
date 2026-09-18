@@ -10,14 +10,26 @@ const findByColumn = async (model, column, value) => {
   return await model.findOne({ where: { [column]: value } });
 };
 
-const searchComplainByTypeOrStatus = async (model, keyword, orderConfig = []) => {
+const getComplainsData = async (model, keyword = '', orderConfig = [], includeConfig = []) => {
+  const whereClause = keyword && keyword.trim() !== '' 
+    ? {
+        [Op.or]: [
+          { jenis: { [Op.iLike]: `%${keyword.trim()}%` } },
+          { status: { [Op.iLike]: `%${keyword.trim()}%` } }
+        ]
+      }
+    : {};
+
   return await model.findAll({
-    where: {
-      [Op.or]: [ 
-        { jenis: { [Op.iLike]: `%${keyword}%` } },
-        { status: { [Op.iLike]: `%${keyword}%` } }
-      ]
-    },
+    where: whereClause,
+    include: includeConfig,
+    order: orderConfig
+  });
+};
+
+const fetchAllWithOrderAndInclude = async (model, orderConfig = [], includeConfig = []) => {
+  return await model.findAll({
+    include: includeConfig,
     order: orderConfig
   });
 };
@@ -178,6 +190,37 @@ exports.createComplain = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Terjadi kesalahan internal pada server."
+    });
+  }
+};
+
+exports.searchComplains = async (req, res) => {
+  try {
+    const { keyword, sortBy, sortOrder } = req.query;
+    const allowedSortColumns = ['id_komplain', 'tanggal', 'jenis', 'status'];
+    const validSortBy = allowedSortColumns.includes(sortBy) ? sortBy : 'id_komplain';
+    const validSortOrder = (sortOrder && sortOrder.toUpperCase() === 'DESC') ? 'DESC' : 'ASC';
+    const orderConfig = [[validSortBy, validSortOrder]];
+    const includeConfig = [
+      {
+        model: db.Customer,
+        as: 'customer',
+        attributes: ['id', 'nama', 'no_telp']
+      }
+    ];
+    const results = await getComplainsData(db.Complain, keyword, orderConfig, includeConfig);
+
+    return res.status(200).json({
+      success: true,
+      count: results.length,
+      data: results
+    });
+
+  } catch (error) {
+    console.error("Error get complains:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan pada server."
     });
   }
 };
