@@ -120,7 +120,7 @@ exports.createComplain = async (req, res) => {
     if ((!id_customer && !nama_customer) || !jenis || !deskripsi) {
       return res.status(400).json({
         success: false,
-        message: "Nama/ID Customer, Jenis Komplain, dan Deskripsi wajib diisi!"
+        message: "Nama atau ID Customer, Jenis Komplain, dan Deskripsi wajib diisi!"
       });
     };
 
@@ -177,7 +177,7 @@ exports.createComplain = async (req, res) => {
     console.error("Error create complain:", error);
     
     // Validasi tambahan jika input ENUM tidak sesuai (SequelizeValidationError)
-    if (error.name === 'SequelizeValidationError') {
+    if (error.name === 'SequelizeValidationError'|| error.name === 'SequelizeDatabaseError') {
       return res.status(400).json({
         success: false,
         message: "Gagal memvalidasi data! Pastikan jenis atau status komplain sudah sesuai dengan pilihan yang ditentukan."

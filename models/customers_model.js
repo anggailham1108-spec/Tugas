@@ -1,4 +1,4 @@
-/* pake opsi 1 yang gk pake class */
+// pake opsi 1 yang gk pake class //
 
 // module.exports = (sequelize, DataTypes) => {
 //   const Customer = sequelize.define('Customer', {
@@ -20,7 +20,7 @@
 //   return Customer;
 // };
 
-/* pake opsi 2 = class */
+// pake opsi 2 = class //
 "use strict";
 const { Model } = require("sequelize");
 
