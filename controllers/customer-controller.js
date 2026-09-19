@@ -83,6 +83,13 @@ exports.createCustomer = async (req, res) => {
         message: "Semua data wajib diisi!"
       });
     }
+    const phoneRegex = /^[0-9]{1,13}$/;
+    if (!phoneRegex.test(no_telp.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: "Nomor telepon harus berupa angka dan maksimal 13 digit!"
+      });
+    }
     const existingCustomer = await findByColumn(db.Customer, "no_telp", no_telp);
     const existingName = await findByColumn(db.Customer, "nama", nama);
 
@@ -93,11 +100,11 @@ exports.createCustomer = async (req, res) => {
       });
     }
     const newCustomer = await createRecord(db.Customer, {
-      nama,
-      alamat,
-      kota,
-      no_telp,
-      pic
+      nama: nama.trim(),
+      alamat: alamat.trim(),
+      kota: kota.trim(),
+      no_telp: no_telp.trim(),
+      pic: pic.trim()
     });
       return res.status(201).json({
       success: true,
