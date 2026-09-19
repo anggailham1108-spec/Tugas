@@ -20,14 +20,15 @@ module.exports = (app) => {
   const CustomerController = require('../controllers/customer-controller.js');
   // Daftarkan router ke aplikasi express (app) secara langsung
   app.use(router);
-  // fungsi untuk tampilkan dan sort customer yang ada
-  //router.get('/customers', CustomerController.getAllCustomers);
+
+  // === router dari customer controller ===
+  // menampilkan dan sort data customer
   router.get('/customers', CustomerController.searchCustomer);
-  // fungsi untuk buat customer yang baru
+  // membuat data customer yang baru
   router.post('/customers', CustomerController.createCustomer);
-  // fungsi untuk ubah/update customer yang ada
+  // mengubah/update customer yang ada
   router.put('/customers/:id', CustomerController.updateCustomer);
-  // fungsi menghapus customer by idnya
+  // menghapus customer by idnya
   router.delete('/customers/:id', CustomerController.deleteCustomer);
   // === end of customer controller ===
 
