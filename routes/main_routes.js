@@ -27,6 +27,8 @@ module.exports = (app) => {
   router.post('/customers', CustomerController.createCustomer);
   // fungsi untuk ubah/update customer yang ada
   router.put('/customers/:id', CustomerController.updateCustomer);
+  // fungsi menghapus customer by idnya
+  router.delete('/customers/:id', CustomerController.deleteCustomer);
   // === end of customer controller ===
 
   // === router dari complain controller ====

@@ -89,7 +89,7 @@ exports.createCustomer = async (req, res) => {
     if (existingCustomer || existingName) {
       return res.status(400).json({
         success: false,
-        message: "Data sudah digunakan oleh customer lain!"
+        message: "Data nama atau nomor telepon sudah digunakan oleh customer lain!"
       });
     }
     const newCustomer = await createRecord(db.Customer, {
@@ -191,7 +191,7 @@ exports.updateCustomer = async (req, res) => {
   } catch (error) {
     console.error("Error update customer:", error);
 
-    // Tangkap SequelizeValidationError jika ada constraint skema
+    // Tangkap SequelizeValidationError jika ada constraint no.telp dan nama harus beda dari cust lain
     if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeDatabaseError') {
       return res.status(400).json({
         success: false,
@@ -206,93 +206,41 @@ exports.updateCustomer = async (req, res) => {
   }
 };
 
+exports.deleteCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const customer = await findByColumn(db.Customer, "id", id);
 
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: `Customer ID ${id} tidak ditemukan!`
+      });
+    }
+    const hasComplain = await db.Complain.findOne({
+      where: { id_customer: id }
+    });
 
+    if (hasComplain) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer tidak bisa dihapus karena masih memiliki riwayat komplain!"
+      });
+    }
 
-// FUNGSI YANG LAMA
-// exports.getAllCustomers = async (req, res) => {
-//   try {
-//     // Mengambil semua data dari tabel customers
-//     let customers = await db.Customer.findAll();
-    
-//     // Mengembalikan data sesuai format respon dashboard Anda
-//     res.status(200).json({
-//       status: 200,
-//       message: "All Customers",
-//       data: customers
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+    await customer.destroy();
 
-// exports.getAllCustomersSort = async (req, res) => {
-//   try {
-//     // Mengambil data dari tabel customers dan diurutkan dari ID terbesar (terbaru)
-//     let allCustomers = await db.Customer.findAll({
-//       order: [["id", "DESC"]],
-//     });
+    return res.status(200).json({
+      success: true,
+      message: `Customer ID ${id} berhasil dihapus!`
+    })
 
-//     // Mengembalikan respon dengan format persis seperti contoh gambar Anda
-//     return res.status(200).send({
-//       success: true,
-//       message: "All customers Sort by ID",
-//       all_customer: allCustomers,
-//     });
-//   } catch (error) {
-//     // Mengembalikan respon error jika terjadi kegagalan query database
-//     return res.status(500).send({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
+  } catch (error) {
+    console.error("Error menghapus customer", error);
 
-// exports.createCustomer = async (req, res) => {
-//   try {
-//     // 1. Ambil data dari body request Postman
-//     const { nama, alamat, kota, no_telp, pic } = req.body;
-
-//     // Validation sederhana: pastikan nama tidak kosong
-//     if (!nama || !no_telp || !alamat || !pic || !kota) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Semua data wajib diisi!"
-//       });
-//     }
-
-//     const existingCustomer = await db.Customer.findOne({
-//       where: { no_telp: no_telp }
-//     });
-
-//     if (existingCustomer) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Nomor telepon sudah digunakan oleh customer lain!"
-//       });
-//     }
-
-//     // 2. Simpan data baru ke database PostgreSQL menggunakan Sequelize .create()
-//     const newCustomer = await db.Customer.create({
-//       nama,
-//       alamat,
-//       kota,
-//       no_telp,
-//       pic
-//     });
-
-//     // 3. Kembalikan respon sukses jika data berhasil disimpan
-//     return res.status(201).json({
-//       success: true,
-//       message: "Customer berhasil ditambahkan!",
-//       data: newCustomer
-//     });
-
-//   } catch (error) {
-//     // Kembalikan respon error jika query gagal
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// };
+    return res.status(500).json({
+      success: false,
+      message: "Error menghapus customer!"
+    })
+  }
+}
