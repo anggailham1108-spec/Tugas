@@ -140,6 +140,72 @@ exports.searchCustomer = async (req, res) => {
   }
 };
 
+exports.updateCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nama, alamat, kota, no_telp, pic } = req.body;
+
+    // 1. Validasi ID harus angka (defensive coding)
+    if (isNaN(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID Customer harus berupa angka!"
+      });
+    }
+
+    // 2. Cari data customer menggunakan helper yang sudah Anda miliki
+    const customer = await findByColumn(db.Customer, "id", id);
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer tidak ditemukan!"
+      });
+    }
+
+    // 3. Pengecekan unik nomor telepon jika diubah
+    if (no_telp && no_telp !== customer.no_telp) {
+      const existingPhone = await findByColumn(db.Customer, "no_telp", no_telp);
+      if (existingPhone) {
+        return res.status(400).json({
+          success: false,
+          message: "Nomor telepon sudah digunakan oleh customer lain!"
+        });
+      }
+    }
+
+    // 4. Update data (gunakan data baru jika ada, atau tetap pakai data lama)
+    await customer.update({
+      nama: nama !== undefined ? nama.trim() : customer.nama,
+      alamat: alamat !== undefined ? alamat.trim() : customer.alamat,
+      kota: kota !== undefined ? kota.trim() : customer.kota,
+      no_telp: no_telp !== undefined ? no_telp.trim() : customer.no_telp,
+      pic: pic !== undefined ? pic.trim() : customer.pic
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Data customer berhasil diperbarui!",
+      data: customer
+    });
+
+  } catch (error) {
+    console.error("Error update customer:", error);
+
+    // Tangkap SequelizeValidationError jika ada constraint skema
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeDatabaseError') {
+      return res.status(400).json({
+        success: false,
+        message: "Data yang dikirimkan tidak valid!"
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan pada server."
+    });
+  }
+};
+
 
 
 

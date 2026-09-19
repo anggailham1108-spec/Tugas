@@ -34,15 +34,12 @@ const fetchAllWithOrderAndInclude = async (model, orderConfig = [], includeConfi
   });
 };
 
-// Fungsi global untuk mengubah data berdasarkan ID/Primary Key tertentu
 const updateRecord = async (model, primaryKeyConfig, dataObject) => {
-  // primaryKeyConfig berbentuk objek, contoh: { id_komplain: 1 } atau { id: 2 }
   return await model.update(dataObject, {
     where: primaryKeyConfig
   });
 };
 
-// Fungsi global untuk menghapus data berdasarkan ID/Primary Key tertentu
 const deleteRecord = async (model, primaryKeyConfig) => {
   return await model.destroy({
     where: primaryKeyConfig
