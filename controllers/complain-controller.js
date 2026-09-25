@@ -1,7 +1,7 @@
 const db = require("../models");
 const Op = db.Sequelize.Op;
 
-// ======= FUNGSI GLOBAL/REUSEABLE/HELP ========
+// * ======= FUNGSI GLOBAL/REUSEABLE/HELP ========
 const createRecord = async (model, dataObject) => {
   return await model.create(dataObject);
 };
@@ -95,7 +95,7 @@ const validateEntityMatch = async (model, id, name, nameColumn, entityLabel, ext
   return { data: null };
 };
 
-// ======= END OF FUNGSI GLOBAL ========
+// * ======= END OF FUNGSI GLOBAL ========
 
 // FUNGSI
 
@@ -424,6 +424,8 @@ exports.createComplain = async (req, res) => {
       'nama', 
       'Customer'
     );
+    if(nama_customer) nama_customer = nama_customer.toLowerCase().trim();
+    
     if (customerValidation.error) {
       return res.status(400).json({ success: false, message: customerValidation.error });
     }

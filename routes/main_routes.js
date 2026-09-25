@@ -21,7 +21,7 @@ module.exports = (app) => {
   // Daftarkan router ke aplikasi express (app) secara langsung
   app.use(router);
 
-  // === router dari customer controller ===
+  // ! === router dari customer controller ===
   // menampilkan dan sort data customer
   router.get('/customers', CustomerController.searchCustomer);
   // membuat data customer yang baru
@@ -32,7 +32,7 @@ module.exports = (app) => {
   router.delete('/customers/:id', CustomerController.deleteCustomer);
   // === end of customer controller ===
 
-  // === router dari complain controller ====
+  // ! === router dari complain controller ====
   const ComplainController = require('../controllers/complain-controller.js');
   //membuat complain
   router.post('/complains', ComplainController.createComplain);
