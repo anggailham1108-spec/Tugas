@@ -32,14 +32,24 @@ module.exports = (app) => {
   router.delete('/customers/:id', CustomerController.deleteCustomer);
   // === end of customer controller ===
 
+  // ! === router dari auth ===
+  const AuthCustomer = require('../controllers/auth-ucustomer-controller.js');
+  // login as customer
+  router.post('/customer/login', AuthCustomer.login);
+
+
   // ! === router dari complain controller ====
   const ComplainController = require('../controllers/complain-controller.js');
-  //membuat complain
+  //membuat complain (customer membuat tiketnya)
   router.post('/complains', ComplainController.createComplain);
-  // update complain
-  router.put('/complains/:id', ComplainController.updateComplain);
+  // update complain == SISI CUST
+  router.put('/complains/:id', ComplainController.updateComplainByCustomer);
+  // update complain == SISI CRM
+  router.patch('/complains/:id', ComplainController.updateComplain)
   // delete complain
   router.delete('/complains/:id', ComplainController.deleteComplain);
-  // tampilkan complain
+  // tampilkan complain == SISI CUST
+  router.get('/complains/:id', ComplainController.getCustomerComplains);
+  // tampilkan complain == SISI CRM
   router.get('/complains', ComplainController.searchComplains);
 };

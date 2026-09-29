@@ -32,7 +32,10 @@ module.exports = (sequelize, DataTypes) => {
      * memiliki hubungan/Foreign Key ke tabel lain, biarkan bagian ini kosong.
      */
     static associate(models) {
-      // define association here
+      this.hasMany(models.UserCustomer, {
+        foreignKey: "id_customer",
+        as: "user_accounts"
+      });
     }
   }
 

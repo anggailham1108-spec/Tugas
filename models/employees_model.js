@@ -4,14 +4,21 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Employee extends Model {
     static associate(models) {
+
       this.hasMany(models.Complain, {
         foreignKey: 'id_crm_employee',
         as: 'handled_complains'
       });
-      this.hasMany(models.Complain, {
-        foreignKey: 'id_reported_employee',
-        as: 'reported_complains'
+
+      this.hasOne(models.User, {
+        foreignKey: "id_employee",
+        as: "user"
       });
+      
+      // this.hasMany(models.Complain, {
+      //   foreignKey: 'id_reported_employee',
+      //   as: 'reported_complains'
+      // });
     }
   }
 
