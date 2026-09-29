@@ -1,10 +1,8 @@
+const { where } = require("sequelize");
 const db = require("../models");
 const Op = db.Sequelize.Op;
 
-// FUNGSI GLOBAL/REUSEABLE/HELP
-// const fetchAll = async (model) => {
-//   return await model.findAll();
-// };
+// * FUNGSI GLOBAL/REUSEABLE/HELP
 
 const fetchAllWithOrder = async (model, orderConfig = []) => {
   return await model.findAll({
@@ -14,9 +12,15 @@ const fetchAllWithOrder = async (model, orderConfig = []) => {
 
 const findByColumn = async (model, columnName, value) => {
   return await model.findOne({
-    where: { [columnName]: value },
+    where: { [columnName]: value }
   });
 };
+
+const findByTwoColomns = async (model, column1 , value1, column2, value2) => {
+  return await model.findOne({
+    where: { [column1]: value1, [column2]: value2 }
+  });
+}
 
 const searchCustomerByNameOrPhone = async (model, keyword, orderConfig = []) => {
   return await model.findAll({
@@ -35,7 +39,7 @@ const createRecord = async (model, dataObject) => {
 };
 
 
-// END OF FUNGSI GLOBAL
+// * END OF FUNGSI GLOBAL
 
 // FUNGSI BARU 1
 // exports.getAllCustomers = async (req, res) => {
@@ -73,6 +77,56 @@ const createRecord = async (model, dataObject) => {
 //   }
 // };
 
+// !masih development yang create customer cabang
+// exports.createCustomer = async (req, res) => {
+//   try {
+//     const { nama, alamat, kota, no_telp, pic } = req.body;
+
+//     if (!nama || !no_telp || !alamat || !pic || !kota) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Semua data wajib diisi!"
+//       });
+//     }
+//     const phoneRegex = /^[0-9]{1,13}$/;
+//     if (!phoneRegex.test(no_telp.trim())) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Nomor telepon harus berupa angka dan maksimal 13 digit!"
+//       });
+//     }
+//     const existingCustomer = await findByTwoColomns(db.Customer, "no_telp", no_telp.trim(), "kota", kota.trim());
+    
+
+//     if (existingCustomer) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Nomor telepon sudah digunakan oleh customer di kota ini!"
+//       });
+//     }
+
+//     const newCustomer = await createRecord(db.Customer, {
+//       nama: nama.trim(),
+//       alamat: alamat.trim(),
+//       kota: kota.trim(),
+//       no_telp: no_telp.trim(),
+//       pic: pic.trim()
+//     });
+//       return res.status(201).json({
+//       success: true,
+//       message: "Customer berhasil ditambahkan!",
+//       data: newCustomer
+//     });
+
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+// !PAKE YANG INI
 exports.createCustomer = async (req, res) => {
   try {
     const { nama, alamat, kota, no_telp, pic } = req.body;
